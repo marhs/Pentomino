@@ -51,7 +51,7 @@
 (defun get-submatriz (matrix puntox puntoy longx longy)
   (let ((matriz))
     ; Uso de las funciones a y b
-    (setf matriz (a m puntoy longy))
+    (setf matriz (a matrix puntoy longy))
     (setf matriz (b matriz puntox longx))
     
     matriz))
@@ -109,34 +109,15 @@
 
 ; Crea el tablero, 6 x 10, relleno de 0.
 (defun crea-tablero()
-  (setf *tablero* (make-array '(6 10) :initial-element 0)))
+  (setf *tablero* (make-array '(3 3) :initial-element 0)))
 
 (defun crea-variables()
+   
    (setf *variables* (list
-		     (crea-ficha :nombre 'f :matriz (make-array '(3 3) :initial-contents '((0 1 1)(1 1 0)(0 1 0))))
-		     (crea-ficha :nombre 'i :matriz (make-array '(5 1) :initial-element 1))
-		     (crea-ficha :nombre 'l :matriz (make-array '(4 2) :initial-contents '((1 0)(1 0)(1 0)(1 1))))
-		     (crea-ficha :nombre 'n :matriz (make-array '(4 2) :initial-contents '((0 1)(1 1)(1 0)(1 0))))
-		     (crea-ficha :nombre 'p :matriz (make-array '(3 2) :initial-contents '((0 1)(1 1)(1 1))))
-		     (crea-ficha :nombre 't :matriz (make-array '(3 3) :initial-contents '((1 1 1)(0 1 0)(0 1 0))))
-		     (crea-ficha :nombre 'u :matriz (make-array '(2 3) :initial-contents '((1 0 1)(1 1 1))))
-		     (crea-ficha :nombre 'v :matriz (make-array '(3 3) :initial-contents '((1 0 0)(1 0 0)(1 1 1))))
-		     (crea-ficha :nombre 'w :matriz (make-array '(3 3) :initial-contents '((1 0 0)(1 1 0)(0 1 1))))
-		     (crea-ficha :nombre 'x :matriz (make-array '(3 3) :initial-contents '((0 1 0)(1 1 1)(0 1 0))))
-		     (crea-ficha :nombre 'y :matriz (make-array '(4 2) :initial-contents '((0 1)(1 1)(0 1)(0 1))))
-		     (crea-ficha :nombre 'z :matriz (make-array '(3 3) :initial-contents '((1 1 0)(0 1 0)(0 1 1))))
-		     
-		     
-		     ;;volteados
-		     (crea-ficha :nombre 'f :matriz (make-array '(3 3) :initial-contents '((1 1 0)(0 1 1)(0 1 0))))
-		     (crea-ficha :nombre 'l :matriz (make-array '(4 2) :initial-contents '((0 1)(0 1)(0 1)(1 1))))
-		     (crea-ficha :nombre 'n :matriz (make-array '(4 2) :initial-contents '((1 0)(1 1)(0 1)(0 1))))
-		     (crea-ficha :nombre 'p :matriz (make-array '(3 2) :initial-contents '((1 0)(1 1)(1 1))))
-		     (crea-ficha :nombre 'v :matriz (make-array '(3 3) :initial-contents '((0 0 1)(0 0 1)(1 1 1))))
-		     (crea-ficha :nombre 'w :matriz (make-array '(3 3) :initial-contents '((0 0 1)(0 1 1)(1 1 0))))
-		     (crea-ficha :nombre 'y :matriz (make-array '(4 2) :initial-contents '((1 0)(1 1)(1 0)(1 0))))
-		     (crea-ficha :nombre 'z :matriz (make-array '(3 3) :initial-contents '((0 1 1)(0 1 0)(1 1 0))))
-		     
+		      (crea-ficha :nombre 'f :matriz (make-array '(2 3) :initial-contents '((1 1 1)(1 0 0))))
+		      (crea-ficha :nombre 'f :matriz (make-array '(2 3) :initial-contents '((1 0 0)(1 1 1))))
+		      (crea-ficha :nombre 'i :matriz (make-array '(1 3) :initial-contents '((1 1 1))))
+		      (crea-ficha :nombre 'j :matriz (make-array '(1 2) :initial-contents '((1 1))))
 )))
 
 ; Rota las variables y las introduce rotadas como nuevas variables
@@ -199,7 +180,7 @@
 			   (first (array-dimensions h))
 			   (second (array-dimensions h))
 			   ))
-    (loop for i form 0 below (first (arrray-dimensions m)) do
+    (loop for i from 0 below (first (array-dimensions m)) do
 	 (loop for j from 0 below (second (array-dimensions m)) do
 	      (if (and (= (aref m i j) (aref h i j)) (= (aref m i j) 1))
 		  (setf x 1))))
@@ -291,7 +272,7 @@
         (cerrados ())                                              ;1.2
         actual                                                     ;1.3
         nuevos-sucesores)                                          ;1.4
-    (loop until (null abiertos) do                                 ;2
+    (loop until (null abiertos) do		                   ;2
           (setf actual (first abiertos))                           ;2.1
           (setf abiertos (rest abiertos))                          ;2.2
 	  (pinta-matriz (estado actual))
