@@ -1,4 +1,3 @@
 
  - Las piezas rotadas/reflejadas (con el mismo nombre) no llegan a entrar en abiertos.
  - Usar (continua-variables) para rotar las piezas (esta implementado, puede que con fallos, pero no se usa en ningun sitio) 
- - La ordenacion de listas de matrices ponderadas no termina de funcionar
