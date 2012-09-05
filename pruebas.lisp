@@ -1,9 +1,39 @@
 
+ (defstruct (ficha (:constructor crea-ficha)
+		  (:conc-name get-))
+  nombre
+  matriz)
+
+(defstruct (operador(:constructor crea-operador)
+		    (:conc-name ))
+  ficha
+  x
+  y)
+
+(defstruct (nodo(:constructor crea-nodo)
+		(:conc-name ))
+  estado
+  camino
+  heuristica)
+
+(defun asd ()
+  (let ((x)(y)(z))
+    (setf x (crea-nodo :estado (make-array '(3 3) :initial-contents '((0 0 1)(1 0 1)(0 0 1)))))
+    (setf y (crea-nodo :estado (make-array '(3 3) :initial-contents '((0 0 0)(1 0 1)(1 1 1)))))
+    (setf z (crea-nodo :estado (make-array '(3 3) :initial-contents '((0 0 0)(1 1 0)(0 0 0)))))
+    (ordena x y)
+))
 
 (defun prueba ()
   (let ((res))
     (setf res (pondera (make-array '(4 4) :initial-contents '((0 0 1 1)(1 0 0 0)(0 1 1 0)(0 0 1 1)))))
     res)
+)
+
+(defun ordena(a b)
+  (if (> (heuristica a)(heuristica b))
+      a
+      b)
 )
 
 (defun pondera (matriz)
@@ -17,6 +47,10 @@
 			    (setf res 100)
 				 )))))
     res)
+)
+
+(defun ordena (a b)
+  (if (
 )
 
 (defun cuenta(i j)
