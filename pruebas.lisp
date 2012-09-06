@@ -43,15 +43,13 @@
 	 (loop for j from 0 below (second (array-dimensions matriz)) do
 	      (if (= 0 (aref *aux* i j))
 		  (and (setf x (cuenta i j))
-		   (if (and (> x 0)(< x 5))
+		   (if (not (= 0 (mod x 5)))
 			    (setf res 100)
 				 )))))
     res)
 )
 
-(defun ordena (a b)
-  (if (
-)
+
 
 (defun cuenta(i j)
     (let ((res 0)(alto)(largo))

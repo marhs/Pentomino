@@ -1,3 +1,4 @@
+(defun crea-variables()
 (setf *variables* (list
 		     (crea-ficha :nombre 'f :matriz (make-array '(3 3) :initial-contents '((0 1 1)(1 1 0)(0 1 0))))
 		     (crea-ficha :nombre 'i :matriz (make-array '(5 1) :initial-element 1))
@@ -23,4 +24,4 @@
 		     (crea-ficha :nombre 'y :matriz (make-array '(4 2) :initial-contents '((1 0)(1 1)(1 0)(1 0))))
 		     (crea-ficha :nombre 'z :matriz (make-array '(3 3) :initial-contents '((0 1 1)(0 1 0)(1 1 0))))
 		     
-))
+)))
