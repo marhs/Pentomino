@@ -107,7 +107,7 @@
    
    (setf *variables* (list
 		      (crea-ficha :nombre 'f :matriz (make-array '(2 3) :initial-contents '((1 1 1)(1 0 0))))
-		      ;(crea-ficha :nombre 'f :matriz (make-array '(2 3) :initial-contents '((1 0 0)(1 1 1))))
+		      (crea-ficha :nombre 'f :matriz (make-array '(2 3) :initial-contents '((1 0 0)(1 1 1))))
 		      (crea-ficha :nombre 'i :matriz (make-array '(2 2) :initial-contents '((0 1)(1 1))))
 		      (crea-ficha :nombre 'j :matriz (make-array '(2 1) :initial-contents '((1)(1))))
 )))
@@ -140,22 +140,48 @@
     (loop for i in *variables* do
 	 (if (not (contiene2 lista i))
 	     (setf lista (append lista (list i)))))
-    (setf *variables* lista)))
+    (setf *variables* lista)
+    lista
+    ))
 
-(defun contiene2(lista termino)
+
+(defun matrices-iguales (a b)
+  (let ((res 1))
+    (if (and (= (first (array-dimensions a)) (first (array-dimensions b)))
+	     (= (second (array-dimensions a)) (second (array-dimensions b))))
+	(loop for i from 0 below (first (array-dimensions a)) do
+	     (loop for j from 0 below (second (array-dimensions a)) do
+		  (if (not (= (aref a i j)(aref b i j)))
+		      (setf res 0))))
+	(setf res 0))
+    (if (= res 0)
+	nil
+	T))
+)
+
+(defun contiene(lista termino)
   (let ((res 0))
-     (format t "contiene:~&")
-  (loop for i in lista when (equalp i termino) do
+     
+  (loop for i in lista when (eq i termino) do
        (setf res 1))
   (if (= res 0)
       nil
       T)))
 
-(defun contiene (lista termino)
-  (let ((res nil))
-  (loop for i in lista when (eq i termino) do
-       (setf res t))
-  res))
+(defun contiene2(lista termino)
+  (let ((res 0))
+     
+  (loop for i in lista do
+       (if (and (eq (get-nombre i) (get-nombre termino)) 
+		(matrices-iguales (get-matriz i) (get-matriz termino)))
+	   (setf res 1)))
+
+  (if (= res 1)
+      T
+      nil)
+))
+
+
 
 ;; Crea los operadores
 (defun crea-operadores()
@@ -284,8 +310,10 @@
     (loop until (null abiertos) do		                   ;2
           (setf actual (first abiertos))                           ;2.1
           (setf abiertos (rest abiertos))                          ;2.2
-	  (pinta-matriz (estado actual))
-          (push actual cerrados)                                   ;2.3
+	  ;(pinta-matriz (estado actual))
+          (push actual cerrados)
+	  (format t "~a" abiertos);2.3
+	  ;(format t " --------- ")
           (cond ((es-estado-final (estado actual))                 ;2.4
                  (return actual))                                  ;2.4.1
                 (t (setf nuevos-sucesores                          ;2.4.2.1
