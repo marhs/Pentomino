@@ -94,16 +94,8 @@
 
 ;; Funciones auxiliares sobre listas
 
-(defun esta (nodo lista-nodos)
-  (let ((estado (estado nodo)))
-    (loop for n in lista-nodos
-          thereis (equalp estado (estado n)))))
 
-(defun contiene (lista termino)
-  (let ((res nil))
-  (loop for i in lista when (eq i termino) do
-       (setf res t))
-  res))
+
 
 ;;; Definicion de variables y operadores
 
@@ -115,9 +107,9 @@
    
    (setf *variables* (list
 		      (crea-ficha :nombre 'f :matriz (make-array '(2 3) :initial-contents '((1 1 1)(1 0 0))))
-		      (crea-ficha :nombre 'f :matriz (make-array '(2 3) :initial-contents '((1 0 0)(1 1 1))))
-		      (crea-ficha :nombre 'i :matriz (make-array '(1 3) :initial-contents '((1 1 1))))
-		      (crea-ficha :nombre 'j :matriz (make-array '(1 2) :initial-contents '((1 1))))
+		      ;(crea-ficha :nombre 'f :matriz (make-array '(2 3) :initial-contents '((1 0 0)(1 1 1))))
+		      (crea-ficha :nombre 'i :matriz (make-array '(2 2) :initial-contents '((0 1)(1 1))))
+		      (crea-ficha :nombre 'j :matriz (make-array '(2 1) :initial-contents '((1)(1))))
 )))
 
 ; Rota las variables y las introduce rotadas como nuevas variables
@@ -149,6 +141,21 @@
 	 (if (not (contiene2 lista i))
 	     (setf lista (append lista (list i)))))
     (setf *variables* lista)))
+
+(defun contiene2(lista termino)
+  (let ((res 0))
+     (format t "contiene:~&")
+  (loop for i in lista when (equalp i termino) do
+       (setf res 1))
+  (if (= res 0)
+      nil
+      T)))
+
+(defun contiene (lista termino)
+  (let ((res nil))
+  (loop for i in lista when (eq i termino) do
+       (setf res t))
+  res))
 
 ;; Crea los operadores
 (defun crea-operadores()
@@ -198,7 +205,7 @@
 	(setf res (apli estado (get-matriz (ficha operador)) (x operador) (y operador))))
     res))
 
-;; Aplica la matriz h a la matriz m (comunmente conocida como la matriz jamon.
+;; Aplica la matriz h a la matriz m (comunmente conocida como la matriz chopped)
 (defun apli (m h x y)
   (let ((res))
     (setf res (copia-estado m))
@@ -254,8 +261,10 @@
 (defun sucesores (nodo)
   (let ((siguiente)
 	(lista))
+    ;AQUI SE MIRAN LOS NOMBRES DE LAS FICHAS EN LOS CAMINOS DE CADA NODO
     (loop for i in (camino nodo) do
 	 (setf lista (append lista (list (get-nombre (ficha i))))))
+    ;SE MIRA QUE NO SE META NINGUN OPERADOR CON UN NOMBRE IGUAL EN EL CAMINO DEL NODO
     (loop for operador in *operadores* do
 	 (setf siguiente (sucesor nodo operador))
 	 when (and siguiente (not (contiene lista (get-nombre (ficha operador)))))
