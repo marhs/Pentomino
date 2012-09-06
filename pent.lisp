@@ -101,15 +101,15 @@
 
 ; Crea el tablero, 6 x 10, relleno de 0.
 (defun crea-tablero()
-  (setf *tablero* (make-array '(3 3) :initial-element 0)))
+  (setf *tablero* (make-array '(4 5) :initial-element 0)))
 
 (defun crea-variables()
    
    (setf *variables* (list
-		      (crea-ficha :nombre 'f :matriz (make-array '(2 3) :initial-contents '((1 1 1)(1 0 0))))
-		      (crea-ficha :nombre 'f :matriz (make-array '(2 3) :initial-contents '((1 0 0)(1 1 1))))
-		      (crea-ficha :nombre 'i :matriz (make-array '(2 2) :initial-contents '((0 1)(1 1))))
-		      (crea-ficha :nombre 'j :matriz (make-array '(2 1) :initial-contents '((1)(1))))
+		      (crea-ficha :nombre 'f :matriz (make-array '(2 3) :initial-contents '((1 1 1)(1 1 0))))
+		      (crea-ficha :nombre 'g :matriz (make-array '(3 3) :initial-contents '((0 0 1)(0 1 1)(1 1 0))))
+		      (crea-ficha :nombre 'i :matriz (make-array '(2 4) :initial-contents '((1 1 1 1)(0 0 0 1))))
+		      (crea-ficha :nombre 'j :matriz (make-array '(4 2) :initial-contents '((1 0)(1 1)(1 0)(1 0))))
 )))
 
 ; Rota las variables y las introduce rotadas como nuevas variables
@@ -261,7 +261,8 @@
     (when estado-sucesor
       (crea-nodo
        :estado estado-sucesor
-       :camino (cons operador (camino nodo))))))
+       :camino (cons operador (camino nodo))
+       :heuristica (pondera estado-sucesor)))))
 
 ;; TODO - Borrar. Se llama a esta funcion en (apli)
 (defun copia-estado (estado)
@@ -307,12 +308,14 @@
         (cerrados ())                                              ;1.2
         actual                                                     ;1.3
         nuevos-sucesores)                                          ;1.4
-    (loop until (null abiertos) do		                   ;2
-          (setf actual (first abiertos))                           ;2.1
+    (loop until (null abiertos) do
+	  (setf abiertos (sort abiertos #' ordena))
+          (format t "~a" abiertos)
+	  (setf actual (first abiertos))                           ;2.1
           (setf abiertos (rest abiertos))                          ;2.2
 	  ;(pinta-matriz (estado actual))
           (push actual cerrados)
-	  (format t "~a" abiertos);2.3
+	  ;2.3
 	  ;(format t " --------- ")
           (cond ((es-estado-final (estado actual))                 ;2.4
                  (return actual))                                  ;2.4.1
@@ -323,4 +326,92 @@
 
 
 				 
-				   
+(defun ordena(a b)
+  (< (heuristica a)(heuristica b))
+     
+)
+
+(defun pondera (matriz)
+  (let ((x 0)(res 0)(estado))
+    (setf estado (copia-estado matriz))
+    (setf *aux* estado)
+    (loop for i from 0 below (first (array-dimensions matriz)) do
+	 (loop for j from 0 below (second (array-dimensions matriz)) do
+	      (if (= 0 (aref *aux* i j))
+		  (and (setf x (cuenta i j))
+		   (if (and (> x 0)(< x 5))
+			    (setf res 100)
+				 )))))
+    res)
+)
+
+(defun copia-matriz (matriz)
+  (let ((res)(x)(y))
+    (setf x (first (array-dimensions matriz)))
+    (setf y (second (array-dimensions matriz)))
+    (setf res (make-array (list (x y)) :initial-element 0))
+res)
+)
+
+(defun cuenta(i j)
+    (let ((res 0)(alto)(largo))
+      (setf alto (first (array-dimensions *aux*)))
+      (setf largo (second (array-dimensions *aux*)))
+      (if (= 0 (aref *aux* i j))
+	  (and (and (setf (aref *aux* i j) 2)
+		    (setf res 1))
+	       (cond 
+		    ;;ESQUINAS
+		    ((and (= i 0)(= j 0))
+		      (and (setf res (+ res (cuenta i (+ j 1))))
+			   (setf res (+ res (cuenta (+ i 1) j)))))
+		     
+		     ((and (= i 0)(= j (- largo 1)))
+		      (and (setf res (+ res (cuenta (+ i 1) j)))
+			   (setf res (+ res (cuenta i (- j 1))))))
+
+		     ((and (= i (- alto 1))(= j 0))
+		      (and (setf res (+ res (cuenta (- i 1) j)))
+			   (setf res (+ res (cuenta i (+ j 1))))))
+
+		     ((and (= i (- alto 1))(= j (- largo 1)))
+		      (and (setf res (+ res (cuenta (- i 1) j)))
+			   (setf res (+ res (cuenta i (- j 1))))))
+
+		     ;;ARISTAS
+		     ((and (= i 0)
+			   (and (> j 0)(< j (- largo 1))))
+		      (and (and (setf res (+ res (cuenta i (- j 1))))
+				(setf res (+ res (cuenta i (+ j 1))))
+				(setf res (+ res (cuenta (+ i 1) j))))))
+
+		     ((and (= i (- alto 1))
+			   (and (> j 0)(< j (- largo 1))))
+		      (and (and (setf res (+ res (cuenta i (- j 1))))
+				(setf res (+ res (cuenta i (+ j 1))))
+				(setf res (+ res (cuenta (- i 1) j))))))
+
+		     ((and (= j 0)
+			   (and (> i 0)(< i (- largo 1))))
+		      (and (and (setf res (+ res (cuenta (- i 1) j)))
+				(setf res (+ res (cuenta (+ i 1) j)))
+				(setf res (+ res (cuenta i (+ j 1)))))))		     
+		     
+		     ((and (= j (- largo 1))
+			   (and (> i 0)(< i (- largo 1))))
+		      (and (and (setf res (+ res (cuenta (- i 1) j)))
+				(setf res (+ res (cuenta (+ i 1) j)))
+				(setf res (+ res (cuenta i (- j 1)))))))
+
+		     ;;CENTRALES
+		     ((and (and (> i 0)(< i (- alto 1)))
+		     	   (and (> j 0)(< j (- largo 1))))
+		      (and (and (setf res (+ res (cuenta (- i 1) j)))
+				(setf res (+ res (cuenta (+ i 1) j)))
+				(setf res (+ res (cuenta i (+ j 1))))
+				(setf res (+ res (cuenta i (- j 1)))))))		   
+
+)))
+
+      res)
+)
