@@ -4,6 +4,7 @@
 (defvar *tablero* nil)
 (defvar *variables* nil)
 (defvar *operadores* nil)
+(defvar *sol* nil)
 
 ;; Definimos estructuras
 
@@ -519,5 +520,12 @@ res)
     aux
 ))
 
-
-
+(defun elimina-columna (matriz num)
+  (let ((aux))
+    (setf aux matriz)
+    (loop for i from (+ num 1) below (second (array-dimensions matriz)) do
+	 (loop for j from 0 below (first (array-dimensions matriz)) do
+	      (setf (aref aux j (- i 1)) (aref matriz j i))))
+    (adjust-array aux (list (first (array-dimensions aux)) (- (second (array-dimensions aux)) 1)))
+    aux
+    ))
