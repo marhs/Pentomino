@@ -529,3 +529,16 @@ res)
     (adjust-array aux (list (first (array-dimensions aux)) (- (second (array-dimensions aux)) 1)))
     aux
     ))
+
+(defun add-fila (matriz fila)
+  (let ((res nil))
+    (setf res (array-dimensions matriz))
+    ; Hay que comprobar si la matriz y la fila a añadir tienen la misma longitud.
+    (adjust-array matriz (list (+ 1 (first res))
+			       (second res)))
+    (loop for i from 0 below (second res) do
+	 (setf (aref matriz (first res) i ) (aref fila i))
+	 )
+    matriz)
+  )
+
