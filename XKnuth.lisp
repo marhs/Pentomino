@@ -479,7 +479,7 @@ res)
     (setf res (append (get-nombre ficha) lol))
 
     (setf aux (make-array (list (+ (first (array-dimensions *tabla*)) 1)
-				(second (array-dimensions *tabla*)))))
+				(second (array-dimensions *tabla*))) :adjustable T))
 
     (loop for i from 0 below (first (array-dimensions *tabla*)) do
 	 (loop for j from 0 below (second (array-dimensions *tabla*)) do
@@ -497,3 +497,27 @@ res)
   (loop for i in *operadores* do
        (añade-operador i))
 )
+
+(defun columna-con-uno (matriz num)
+  (loop for i from 0 below (first (array-dimensions matriz)) do
+       (if (= 1 (aref matriz i num))
+	   (return T))))
+
+(defun no-tiene-solucion (matriz)
+  (loop for i from 0 below (second (array-dimensions matriz)) do 
+       (if (not (columna-con-uno matriz i))
+	   (return T)))
+)
+
+(defun elimina-fila (matriz num)
+ (let ((aux))
+    (setf aux matriz)
+    (loop for i from (+ num 1) below (first (array-dimensions matriz)) do
+	 (loop for j from 0 below (second (array-dimensions matriz)) do
+	      (setf (aref aux (- i 1) j) (aref matriz i j))))
+    (adjust-array aux (list (- (first (array-dimensions aux)) 1) (second (array-dimensions aux))))
+    aux
+))
+
+
+
