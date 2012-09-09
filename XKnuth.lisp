@@ -4,7 +4,6 @@
 (defvar *tablero* nil)
 (defvar *variables* nil)
 (defvar *operadores* nil)
-(defvar *sol* nil)
 
 ;; Definimos estructuras
 
@@ -102,7 +101,7 @@
 
 ; Crea el tablero, 6 x 10, relleno de 0.
 (defun crea-tablero()
-  (setf *tablero* (make-array '(4 4) :initial-element 0)))
+  (setf *tablero* (make-array '(4 5) :initial-element 0)))
 
 (defun nuevas-variables()
    
@@ -315,7 +314,7 @@
     ;SE MIRA QUE NO SE META NINGUN OPERADOR CON UN NOMBRE IGUAL EN EL CAMINO DEL NODO
     (loop for operador in *operadores* do
 	 (setf siguiente (sucesor nodo operador))
-	 when (and siguiente (not (contiene lista (get-nombre (ficha operador)))))
+	 when (and (= 0 (heuristica siguiente)) (and siguiente (not (contiene lista (get-nombre (ficha operador))))))
 	 collect siguiente)))
 
 (defun nuevos-sucesores (nodo abiertos cerrados)
@@ -325,14 +324,17 @@
   (let ((abiertos (list (crea-nodo                                 ;1.1
                          :estado *tablero*
                          :camino ()
-			 :heuristica 0)))
+			 :heuristica 0
+			 )))
         (cerrados ())                                              ;1.2
         actual                                                     ;1.3
         nuevos-sucesores)                                          ;1.4
     (loop until (null abiertos) do
 	  (setf abiertos (sort abiertos #' ordena))
-          ;(format t "~a" abiertos)
+          ;(setf abiertos (limpia abiertos))
+	  ;(format t "~a~%" (heuristica actual))
 	  (setf actual (first abiertos))                           ;2.1
+	  (format t "~a~%" (heuristica actual))
           (setf abiertos (rest abiertos))                          ;2.2
 	  ;(pinta-matriz (estado actual))
           (push actual cerrados)
@@ -343,8 +345,18 @@
                 (t (setf nuevos-sucesores                          ;2.4.2.1
                          (nuevos-sucesores actual abiertos cerrados))
                    (setf abiertos                                  ;2.4.2.2
-                         (append nuevos-sucesores abiertos)))))))
+                         (append nuevos-sucesores abiertos))))
 
+    )))
+
+(defun limpia (lista)
+  (let ((res ()))
+    (if (not (= 0 (length lista)))
+	(loop for i in lista do
+	     ;(format t "~a" (length lista))
+	     (if  (not (= 100 (heuristica i)))
+		 (setf res (append res (list i))))))))
+	     
 
 				 
 (defun ordena(a b)
@@ -440,105 +452,13 @@ res)
 (defun funcion ()
 
   (setf *variables* (list 
-		     (crea-ficha :nombre '(1 0 0 0 0) :matriz (make-array '(2 2) :initial-contents '((1 1)(1 0))))
-		     (crea-ficha :nombre '(0 1 0 0 0) :matriz (make-array '(1 2) :initial-contents '((1 1))))
-		     (crea-ficha :nombre '(0 0 1 0 0) :matriz (make-array '(2 2) :initial-contents '((1 1)(1 1))))
-		     (crea-ficha :nombre '(0 0 0 1 0) :matriz (make-array '(3 1) :initial-contents '((1)(1)(1))))
-		     (crea-ficha :nombre '(0 0 0 0 1) :matriz (make-array '(2 3) :initial-contents '((1 0 0)(1 1 1))))
+		     (crea-ficha :nombre 'a :matriz (make-array '(2 3) :initial-contents '((1 1 1)(1 1 0))))
+		     (crea-ficha :nombre 'b :matriz (make-array '(3 3) :initial-contents '((0 0 1)(1 1 1)(1 0 0))))
+		     (crea-ficha :nombre 'c :matriz (make-array '(3 3) :initial-contents '((0 0 1)(0 0 1)(1 1 1))))
+		     (crea-ficha :nombre 'd :matriz (make-array '(4 2) :initial-contents '((1 1)(0 1)(0 1)(0 1))))
+		     ;(crea-ficha :nombre 'e :matriz (make-array '(2 3) :initial-contents '((1 0 0)(1 1 1))))
 
 )))
 
 ;;COSAS NUEVAS
-
-
-(defun ficha-a-lista (ficha)
-  (let ((res))
-    (setf res (append (get-nombre ficha) (pasa-a-lista (get-matriz ficha))))
-    res
-*))
-
-
-(defun pasa-a-lista (matriz)
-  (let ((res ()))
-    (loop for i from 0 below (first (array-dimensions matriz)) do
-	 (loop for j from 0 below (second (array-dimensions matriz )) do
-	      (setf res (append res (list (aref matriz i j))))))
-    res))
-
-(defun crea-tabla ()
-  (setf *tabla* (make-array '(0 21)))
-)
-
-(defun añade-operador (operador)
-  (let ((res)(lol)(aux)(ficha))
-    (setf ficha (ficha operador))
-    (setf lol (apli *tablero*
-		    (get-matriz ficha)
-		    (x operador)
-		    (y operador)))
-    (setf lol (pasa-a-lista lol))
-    (setf res (append (get-nombre ficha) lol))
-
-    (setf aux (make-array (list (+ (first (array-dimensions *tabla*)) 1)
-				(second (array-dimensions *tabla*))) :adjustable T))
-
-    (loop for i from 0 below (first (array-dimensions *tabla*)) do
-	 (loop for j from 0 below (second (array-dimensions *tabla*)) do
-	      (setf (aref aux i j) (aref *tabla* i j))))
-
-    (loop for i from 0 below (second (array-dimensions *tabla*)) do
-	 (if (= 0 (first (array-dimensions aux)))
-	     (setf (aref aux 0 i) (nth i res))
-	     (setf (aref aux (- (first (array-dimensions aux)) 1) i) (nth i res))))
-    (setf *tabla* aux)
-    aux
-))
-
-(defun completa-tabla ()
-  (loop for i in *operadores* do
-       (añade-operador i))
-)
-
-(defun columna-con-uno (matriz num)
-  (loop for i from 0 below (first (array-dimensions matriz)) do
-       (if (= 1 (aref matriz i num))
-	   (return T))))
-
-(defun no-tiene-solucion (matriz)
-  (loop for i from 0 below (second (array-dimensions matriz)) do 
-       (if (not (columna-con-uno matriz i))
-	   (return T)))
-)
-
-(defun elimina-fila (matriz num)
- (let ((aux))
-    (setf aux matriz)
-    (loop for i from (+ num 1) below (first (array-dimensions matriz)) do
-	 (loop for j from 0 below (second (array-dimensions matriz)) do
-	      (setf (aref aux (- i 1) j) (aref matriz i j))))
-    (adjust-array aux (list (- (first (array-dimensions aux)) 1) (second (array-dimensions aux))))
-    aux
-))
-
-(defun elimina-columna (matriz num)
-  (let ((aux))
-    (setf aux matriz)
-    (loop for i from (+ num 1) below (second (array-dimensions matriz)) do
-	 (loop for j from 0 below (first (array-dimensions matriz)) do
-	      (setf (aref aux j (- i 1)) (aref matriz j i))))
-    (adjust-array aux (list (first (array-dimensions aux)) (- (second (array-dimensions aux)) 1)))
-    aux
-    ))
-
-(defun add-fila (matriz fila)
-  (let ((res nil))
-    (setf res (array-dimensions matriz))
-    ; Hay que comprobar si la matriz y la fila a añadir tienen la misma longitud.
-    (adjust-array matriz (list (+ 1 (first res))
-			       (second res)))
-    (loop for i from 0 below (second res) do
-	 (setf (aref matriz (first res) i ) (aref fila i))
-	 )
-    matriz)
-  )
 
