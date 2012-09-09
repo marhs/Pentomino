@@ -22,7 +22,8 @@
 		 (:conc-name ))
   estado
   camino
-  heuristica)
+  heuristica
+  operadores)
 
 ;; Funciones auxiliares sobre matrices
 (defun rota (m)
@@ -282,7 +283,28 @@
       (crea-nodo
        :estado estado-sucesor
        :camino (cons operador (camino nodo))
-       :heuristica (pondera estado-sucesor)))))
+       :heuristica (pondera estado-sucesor)
+       :operadores (elimina-operadores nodo operador)))))
+
+(defun elimina-operadores(nodo operador)
+  (let ((res))
+    (loop for i in (operadores nodo) do
+	 (if (not ( eq (get-nombre (ficha operador)) (get-nombre (ficha i))))
+	     (setf res (append res (list i)))))
+    res)
+
+)
+
+(defun prueba ()
+  (let ((res)(nodo))
+    (setf nodo (crea-nodo
+		:estado (make-array '(6 10) :initial-element 0)
+		:operadores *operadores*))
+    (setf res (elimina-operadores nodo (first *operadores*)))
+	res)	
+)
+
+
 
 ;; TODO - Borrar. Se llama a esta funcion en (apli)
 (defun copia-estado (estado)
@@ -312,9 +334,9 @@
     (loop for i in (camino nodo) do
 	 (setf lista (append lista (list (get-nombre (ficha i))))))
     ;SE MIRA QUE NO SE META NINGUN OPERADOR CON UN NOMBRE IGUAL EN EL CAMINO DEL NODO
-    (loop for operador in *operadores* do
+    (loop for operador in (operadores nodo) do
 	 (setf siguiente (sucesor nodo operador))
-	 when (and siguiente (not (contiene lista (get-nombre (ficha operador)))))
+	
 	 collect siguiente)))
 
 (defun nuevos-sucesores (nodo abiertos cerrados)
@@ -325,6 +347,7 @@
                          :estado *tablero*
                          :camino ()
 			 :heuristica 0
+			 :operadores *operadores*
 			 )))
         (cerrados ())                                              ;1.2
         actual                                                     ;1.3
