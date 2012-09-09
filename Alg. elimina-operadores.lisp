@@ -502,7 +502,15 @@ res)
 		 (setf res (append res (list i))))))
     res))
 	     
+;; PREPARACIÓN DEL SISTEMA PARA SU EJECUCIÓN
 
+(defun prepara ()
+	(crea-tablero)
+ 	(crea-variables)
+ 	(continua-variables)
+ 	(elimina-dobles)
+ 	(crea-operadores)
+ )
 
 
 ;;;ALGORITMO GENERAL
