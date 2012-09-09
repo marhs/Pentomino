@@ -535,4 +535,43 @@ res)
 )))
 
 
+(defun busqueda-en-anchura ()
+  (let ((abiertos (list (crea-nodo                                 ;1.1
+                         :estado *estado-inicial*
+                         :camino ())))
+        (cerrados ())                                              ;1.2
+        actual                                                     ;1.3
+        nuevos-sucesores)                                          ;1.4
+    (loop until (null abiertos) do                                 ;2
+          (setf actual (first abiertos))                           ;2.1
+          (setf abiertos (rest abiertos))                          ;2.2
+          (push actual cerrados)                                   ;2.3
+          (cond ((es-estado-final (estado actual))                 ;2.4
+                 (return actual))                                  ;2.4.1
+                (t (setf nuevos-sucesores                          ;2.4.2.1
+                         (nuevos-sucesores actual abiertos cerrados))
+                   (setf abiertos                                  ;2.4.2.2
+                         (append abiertos nuevos-sucesores)))))))
 
+(defun busqueda-en-profundidad-acotada (&key (COTA 5))
+  (let ((abiertos (list (crea-nodo                                 ;1.1
+                         :estado *estado-inicial*
+                         :camino ())))
+        (cerrados ())                                              ;1.2
+        actual                                                     ;1.3
+        nuevos-sucesores)                                          ;1.4
+    (loop until (null abiertos) do                                 ;2
+          (setf actual (first abiertos))                           ;2.1
+          (setf abiertos (rest abiertos))                          ;2.2
+          (push actual cerrados)                                   ;2.3
+          (cond ((es-estado-final (estado actual))                 ;2.4
+                 (return actual))                                  ;2.4.1
+                ((< (length (camino actual)) cota)
+                 (setf nuevos-sucesores                            ;2.4.2.1
+                       (nuevos-sucesores actual abiertos cerrados))
+                 (setf abiertos                                    ;2.4.2.2
+                       (append nuevos-sucesores abiertos)))))))
+
+(defun busqueda-en-profundidad-iterativa (&key (cota-inicial 5))
+  (loop for n from cota-inicial
+        thereis (busqueda-en-profundidad-acotada :cota n)))
