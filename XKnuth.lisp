@@ -314,7 +314,7 @@
     ;SE MIRA QUE NO SE META NINGUN OPERADOR CON UN NOMBRE IGUAL EN EL CAMINO DEL NODO
     (loop for operador in *operadores* do
 	 (setf siguiente (sucesor nodo operador))
-	 when (and (= 0 (heuristica siguiente)) (and siguiente (not (contiene lista (get-nombre (ficha operador))))))
+	 when (and siguiente (not (contiene lista (get-nombre (ficha operador)))))
 	 collect siguiente)))
 
 (defun nuevos-sucesores (nodo abiertos cerrados)
@@ -330,11 +330,13 @@
         actual                                                     ;1.3
         nuevos-sucesores)                                          ;1.4
     (loop until (null abiertos) do
-	  (setf abiertos (sort abiertos #' ordena))
-          ;(setf abiertos (limpia abiertos))
+	  ;(setf abiertos (sort abiertos #' ordena))
+          
+	  (setf abiertos (limpia abiertos))
 	  ;(format t "~a~%" (heuristica actual))
 	  (setf actual (first abiertos))                           ;2.1
-	  (format t "~a~%" (heuristica actual))
+	 (loop for i in abiertos do (format t "~a" (heuristica i)))
+	  ;(format t "~a~%" (heuristica actual))
           (setf abiertos (rest abiertos))                          ;2.2
 	  ;(pinta-matriz (estado actual))
           (push actual cerrados)
@@ -346,6 +348,7 @@
                          (nuevos-sucesores actual abiertos cerrados))
                    (setf abiertos                                  ;2.4.2.2
                          (append nuevos-sucesores abiertos))))
+	  
 
     )))
 
@@ -355,7 +358,8 @@
 	(loop for i in lista do
 	     ;(format t "~a" (length lista))
 	     (if  (not (= 100 (heuristica i)))
-		 (setf res (append res (list i))))))))
+		 (setf res (append res (list i))))))
+    res))
 	     
 
 				 
