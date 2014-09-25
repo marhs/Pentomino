@@ -1,11 +1,11 @@
-Pentomino
-=========
+# Pentomino solver
+
 Marco Herrero <me@marhs.de>
+
 José María Martínez <warning.mexa@gmail.com>
 
 Algoritmo para la resolución de pentóminos en Lisp. 
 Versión funcional no optimizada, funciona sólo con pentóminos de pequeño tamaño.
-Para más información, consultar Informacion.txt
 
 ## RESOLUCIÓN DE PROBLEMAS DE PENTOMINÓS
 
