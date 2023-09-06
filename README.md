@@ -1,18 +1,11 @@
 # Pentomino solver
 
-Marco Herrero <me@marhs.de>
-
-José María Martínez <warning.mexa@gmail.com>
-
 Algoritmo para la resolución de pentóminos en Lisp. 
 Versión funcional no optimizada, funciona sólo con pentóminos de pequeño tamaño.
 
 ## RESOLUCIÓN DE PROBLEMAS DE PENTOMINÓS
 
- Alumnos:
- 	José María Martínez López
- 	Marco Herrero Serna
-
+(Marco / Mexa)
 
  El trabajo trata sobre resolución del puzzle de los pentominós. Lo resolvemos planteando el problema como un espacio de estados, y aplicando diferentes estrategias para encontrar un camino hacia el estado final. 
 
